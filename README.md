@@ -4,6 +4,14 @@ Scratch の音声エディタをベースにした、ブラウザだけで動く
 
 > **非公式ツールです。** Scratch Foundation とは提携・承認関係にありません。Scratch は Scratch Foundation の商標です。
 
+## デモ
+
+GitHub Pages で公開しています。
+
+https://pixelnest256.github.io/sound-studio/
+
+音声ファイルはサーバーに送信されず、すべてブラウザ内で処理されます。
+
 ## 主な機能
 
 ### タイムライン編集
@@ -76,6 +84,10 @@ npm start        # 開発サーバー: http://localhost:5174/
 npm run build    # dist/ に本番ビルドを出力
 npm run preview  # ビルド結果を http://localhost:4173/ で確認
 ```
+
+## デプロイ
+
+GitHub Pages は `gh-pages` ブランチの静的ファイルを配信しています。更新時は本番ビルドを作成し、`dist/` の内容を `gh-pages` ブランチにコミットして push してください。
 
 ## プロジェクト構成
 
