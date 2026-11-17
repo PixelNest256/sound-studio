@@ -592,12 +592,16 @@ class TimelineEditor extends React.Component {
                         <label className="tl-check"><input type="checkbox" checked={snap} onChange={e => this.setState({snap: e.target.checked})} />吸着</label>
                         <span className="tl-hint">Ctrl+スクロールで横方向ズーム</span>
                         <a
-                            className="tl-hint"
                             href="https://github.com/PixelNest256/sound-studio"
                             rel="noreferrer"
                             target="_blank"
                             title="ソースコードとライセンス (AGPL-3.0)"
-                            style={{color: 'var(--accent, #855cd6)', textDecoration: 'none'}}
+                            style={{
+                                color: 'var(--accent, #855cd6)',
+                                fontSize: 11,
+                                textDecoration: 'none',
+                                whiteSpace: 'nowrap'
+                            }}
                         >
                             ソース / AGPL-3.0
                         </a>
