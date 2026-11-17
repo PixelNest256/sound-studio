@@ -591,6 +591,16 @@ class TimelineEditor extends React.Component {
                         <span className="tl-sp" />
                         <label className="tl-check"><input type="checkbox" checked={snap} onChange={e => this.setState({snap: e.target.checked})} />吸着</label>
                         <span className="tl-hint">Ctrl+スクロールで横方向ズーム</span>
+                        <a
+                            className="tl-hint"
+                            href="https://github.com/PixelNest256/sound-studio"
+                            rel="noreferrer"
+                            target="_blank"
+                            title="ソースコードとライセンス (AGPL-3.0)"
+                            style={{color: 'var(--accent, #855cd6)', textDecoration: 'none'}}
+                        >
+                            ソース / AGPL-3.0
+                        </a>
                         <input ref={this.fileInputRef} type="file" accept="audio/*,.wav,.mp3,.ogg,.m4a,.flac,.webm" hidden onChange={this.onFileChange} />
                     </div>
 
