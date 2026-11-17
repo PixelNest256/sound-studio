@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sound Studio – UI案</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fcfaf6;--panel:#fff;--line:#ebe4ee;--ink:#2b2433;--sub:#8a8094;
+  --ac:#b24fc4;--ac2:#d98ae4;--acbg:#f6e4f8;--wave:#c06ccc;
+  --t1:#f1dcf5;--t2:#d9ecf7;--t3:#fbeccd;--t4:#d3f1ea;
+  --t1l:#b24fc4;--t2l:#3a8fc0;--t3l:#d49a1f;--t4l:#1f9c84;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17131b;--panel:#201a26;--line:#362d3e;--ink:#f1eaf5;--sub:#9d92a8;
+  --ac:#d58be2;--ac2:#b24fc4;--acbg:#3a2442;--wave:#d58be2;
+  --t1:#3a2442;--t2:#1f3342;--t3:#403219;--t4:#173a34;
+  --t1l:#d58be2;--t2l:#6cb6e0;--t3l:#e9b94d;--t4l:#4fcfb5;}}
+:root[data-theme="dark"]{
+  --bg:#17131b;--panel:#201a26;--line:#362d3e;--ink:#f1eaf5;--sub:#9d92a8;
+  --ac:#d58be2;--ac2:#b24fc4;--acbg:#3a2442;--wave:#d58be2;
+  --t1:#3a2442;--t2:#1f3342;--t3:#403219;--t4:#173a34;
+  --t1l:#d58be2;--t2l:#6cb6e0;--t3l:#e9b94d;--t4l:#4fcfb5;}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:13px/1.4 "Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic",Meiryo,sans-serif;min-width:1280px;overflow:hidden;user-select:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.app{height:100%;display:grid;grid-template-columns:1fr 340px;grid-template-rows:56px 60px 1fr 252px}
+.top{grid-column:1/3;display:flex;align-items:center;gap:12px;padding:0 20px;border-bottom:1px solid var(--line)}
+.logo{width:34px;height:34px;border-radius:9px;background:#201a26;display:grid;place-items:center;color:#fff}
+.top b{font-size:15px}.top small{display:block;color:var(--sub);font-size:11px;margin-top:-2px}
+.sp{flex:1}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:7px 14px}
+.btn.dark{background:#201a26;color:#fff;border-color:#201a26;font-weight:700}
+.bar{display:flex;align-items:center;gap:6px;padding:0 20px;border-bottom:1px solid var(--line)}
+.play{width:40px;height:40px;border-radius:50%;background:var(--ac);display:grid;place-items:center;box-shadow:0 0 0 4px var(--acbg)}
+.play i{width:13px;height:13px;background:#fff;border-radius:2px}
+.time{font-weight:700;margin:0 14px 0 8px;min-width:120px}.time span{color:var(--sub);font-weight:500}
+.tool{display:flex;flex-direction:column;align-items:center;gap:1px;padding:4px 10px;border-radius:8px;color:var(--ac);font-size:10.5px;min-width:52px}
+.tool svg{width:20px;height:20px}.tool span{color:var(--sub)}
+.tool:hover{background:var(--acbg)}.tool.on{background:var(--acbg);outline:1px solid var(--ac2)}
+.tool.off{opacity:.4}
+.vr{width:1px;height:34px;background:var(--line);margin:0 8px}
+.seg{display:flex;gap:2px;align-items:center;margin-left:6px}
+.seg label{color:var(--sub);font-size:11px;margin-right:4px}
+.zoom{display:flex;align-items:center;gap:6px;color:var(--sub)}
+.zoom input{width:110px;accent-color:var(--ac)}
+
+/* timeline */
+.tl{overflow:auto;position:relative;min-height:0;border-right:1px solid var(--line)}
+.tlgrid{display:grid;grid-template-columns:176px 1fr;position:relative;min-width:900px}
+.ruler{height:28px;position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);position:relative}
+.ruler span{position:absolute;top:8px;font-size:10px;color:var(--sub);transform:translateX(3px)}
+.ruler i{position:absolute;bottom:0;width:1px;height:8px;background:var(--line)}
+.corner{height:28px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);display:flex;align-items:center;padding:0 12px;color:var(--sub);font-size:11px;position:sticky;top:0;z-index:6;background:var(--bg)}
+.head{height:78px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);padding:8px 12px;display:flex;flex-direction:column;gap:5px;background:var(--bg)}
+.head .n{display:flex;align-items:center;gap:7px;font-weight:700}
+.head .dot{width:9px;height:9px;border-radius:50%}
+.head .ms{display:flex;gap:4px}
+.ms button{border:1px solid var(--line);background:var(--panel);border-radius:6px;font-size:10.5px;padding:1px 7px;color:var(--sub)}
+.ms button.on{background:var(--acbg);color:var(--ac);border-color:var(--ac2)}
+.head input[type=range]{width:100%;accent-color:var(--ac);height:14px;margin:0}
+.lane{height:78px;border-bottom:1px solid var(--line);position:relative;background:
+  repeating-linear-gradient(90deg,transparent 0 calc(100%/21 - 1px),var(--line) calc(100%/21 - 1px) calc(100%/21))}
+.clip{position:absolute;top:7px;bottom:7px;border-radius:8px;overflow:hidden;cursor:grab;border:1.5px solid transparent}
+.clip.sel{outline:2px solid var(--ink);outline-offset:1px}
+.clip svg{position:absolute;inset:16px 0 0 0;width:100%;height:calc(100% - 16px)}
+.clip .nm{position:absolute;top:2px;left:8px;right:8px;font-size:10.5px;font-weight:700;display:flex;gap:4px;white-space:nowrap;overflow:hidden}
+.clip .bd{background:rgba(255,255,255,.7);border-radius:4px;padding:0 4px;font-weight:500;color:#2b2433}
+.clip .h{position:absolute;top:0;bottom:0;width:7px;cursor:ew-resize}.clip .h.l{left:0}.clip .h.r{right:0}
+.clip:hover .h{background:rgba(0,0,0,.16)}
+.phd{position:absolute;top:0;bottom:0;width:2px;background:var(--ink);z-index:4;pointer-events:none}
+.phd:before{content:"";position:absolute;top:0;left:-5px;border:6px solid transparent;border-top-color:var(--ink);border-bottom:0}
+.addtr{margin:10px 12px;color:var(--sub);border:1px dashed var(--line);border-radius:10px;padding:6px 12px;width:152px}
+
+/* dock */
+.dock{grid-column:1;border-top:1px solid var(--line);display:grid;grid-template-columns:176px 1fr;border-right:1px solid var(--line);background:var(--panel);min-height:0}
+.plist{border-right:1px solid var(--line);padding:10px 8px;display:flex;flex-direction:column;gap:3px;overflow:auto}
+.plist h4{margin:2px 6px 6px;font-size:11px;color:var(--sub);font-weight:500}
+.pi{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;text-align:left}
+.pi .sw{width:9px;height:9px;border-radius:3px;background:var(--line)}
+.pi.has .sw{background:var(--ac)}
+.pi.on{background:var(--acbg);font-weight:700}
+.gwrap{padding:12px 0 12px 0;position:relative;min-width:0}
+.gtitle{position:absolute;top:10px;left:14px;z-index:3;display:flex;gap:10px;align-items:center;font-weight:700}
+.gtitle small{font-weight:400;color:var(--sub)}
+.graph{position:absolute;left:0;right:0;top:40px;bottom:14px;margin-right:0;cursor:crosshair}
+.graph svg{position:absolute;inset:0;width:100%;height:100%}
+.out{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(135deg,rgba(128,128,128,.1) 0 6px,transparent 6px 12px)}
+.pt{position:absolute;width:13px;height:13px;margin:-6.5px 0 0 -6.5px;border-radius:50%;background:var(--panel);border:2.5px solid var(--ac);cursor:grab;z-index:2}
+.pt:hover{background:var(--ac)}
+.ylab{position:absolute;left:6px;font-size:10px;color:var(--sub);z-index:3}
+.gtools{position:absolute;right:14px;top:8px;z-index:3;display:flex;gap:6px}
+.gtools button{border:1px solid var(--line);border-radius:8px;padding:3px 10px;background:var(--bg);font-size:11px}
+.gtools button.on{background:var(--acbg);border-color:var(--ac2);color:var(--ac)}
+.gphd{position:absolute;top:40px;bottom:14px;width:2px;background:var(--ink);opacity:.5;pointer-events:none;z-index:1}
+
+/* inspector */
+.insp{grid-row:2/5;grid-column:2;overflow:auto;background:var(--panel)}
+.sec{padding:14px 16px;border-bottom:1px solid var(--line)}
+.sec h3{margin:0 0 10px;font-size:13px;display:flex;align-items:center;justify-content:space-between}
+.sec h3 small{color:var(--sub);font-weight:400}
+.selbox{display:flex;align-items:center;gap:10px}
+.selbox .sw{width:12px;height:36px;border-radius:5px}
+.selbox b{display:block;font-size:14px}.selbox span{color:var(--sub);font-size:11.5px}
+.eq{position:relative;height:150px;border-radius:10px;background:var(--bg);border:1px solid var(--line);overflow:hidden}
+.eq svg{position:absolute;inset:0;width:100%;height:100%}
+.eqf{display:flex;justify-content:space-between;color:var(--sub);font-size:9.5px;margin:4px 2px 8px}
+.chips{display:flex;gap:5px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);border-radius:99px;padding:2px 10px;font-size:11px;background:var(--bg)}
+.chip.on{background:var(--acbg);border-color:var(--ac2);color:var(--ac);font-weight:700}
+.fx{border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:var(--bg)}
+.fx.act{border-color:var(--ac);box-shadow:0 0 0 2px var(--acbg)}
+.fxh{display:flex;align-items:center;gap:8px;padding:8px 10px}
+.tg{width:28px;height:16px;border-radius:9px;background:var(--line);position:relative;flex:none;cursor:pointer}
+.tg:after{content:"";position:absolute;left:2px;top:2px;width:12px;height:12px;border-radius:50%;background:#fff;transition:.15s}
+.tg.on{background:var(--ac)}.tg.on:after{left:14px}
+.fxh b{flex:1}
+.gbtn{display:flex;align-items:center;gap:3px;border:1px solid var(--line);border-radius:7px;padding:2px 7px;font-size:10.5px;color:var(--sub);background:var(--panel)}
+.gbtn.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.fxb{padding:0 10px 9px}
+.row{display:grid;grid-template-columns:62px 1fr 34px;align-items:center;gap:6px;font-size:11.5px;color:var(--sub)}
+.row input{accent-color:var(--ac);width:100%;margin:2px 0}.row em{font-style:normal;text-align:right;color:var(--ink)}
+.add{width:100%;border:1px dashed var(--ac2);color:var(--ac);border-radius:10px;padding:8px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="app">
+
+<header class="top">
+  <div class="logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 12h3l3-8 4 16 3-8h5"/></svg></div>
+  <div><b>Sound Studio</b><small>Scratch-style sound editor</small></div>
+  <div class="sp"></div>
+  <button class="btn">プロジェクト名：test</button>
+  <button class="btn">ファイル ▾</button>
+  <button class="btn dark">WAVで書き出し</button>
+</header>
+
+<div class="bar">
+  <button class="play" aria-label="再生"><i></i></button>
+  <div class="time">00:59.38 <span>/ 03:25.28</span></div>
+  <button class="tool"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/></svg><span>元に戻す</span></button>
+  <button class="tool off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 000 12h3"/></svg><span>やり直す</span></button>
+  <div class="vr"></div>
+  <button class="tool on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 3v18M19 3v18M5 12h14M9 8l-4 4 4 4M15 8l4 4-4 4"/></svg><span>選択・移動</span></button>
+  <button class="tool"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4L8.1 15.9M14.5 14.5L20 20M8.1 8.1L12 12"/></svg><span>分割</span></button>
+  <button class="tool"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="7" width="18" height="10" rx="2" stroke-dasharray="3 3"/><path d="M12 3v18"/></svg><span>範囲選択</span></button>
+  <div class="vr"></div>
+  <button class="tool"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M4 16V6a2 2 0 012-2h10"/></svg><span>コピー</span></button>
+  <button class="tool off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9z"/></svg><span>貼り付け</span></button>
+  <button class="tool"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg><span>削除</span></button>
+  <div class="sp"></div>
+  <div class="seg"><label>吸着</label><button class="chip on" id="snap">ON</button></div>
+  <div class="vr"></div>
+  <div class="zoom">拡大 <input type="range" min="1" max="10" value="1" aria-label="拡大"></div>
+</div>
+
+<main class="tl" id="tl">
+  <div class="tlgrid" id="grid"></div>
+</main>
+
+<section class="dock">
+  <div class="plist" id="plist"><h4>変化グラフ（選択中のクリップ）</h4></div>
+  <div class="gwrap" id="gwrap">
+    <div class="gtitle" id="gtitle"></div>
+    <div class="gtools">
+      <button class="on" data-m="line">直線</button><button data-m="curve">なめらか</button><button data-m="step">段階</button><button id="reset">リセット</button>
+    </div>
+    <div class="graph" id="graph"></div>
+  </div>
+</section>
+
+<aside class="insp">
+  <div class="sec">
+    <div class="selbox"><div class="sw" id="selsw"></div><div><b id="selname"></b><span id="selinfo"></span></div></div>
+  </div>
+  <div class="sec">
+    <h3>イコライザ <small id="eqname">フラット</small></h3>
+    <div class="eq" id="eq"></div>
+    <div class="eqf"><span>31</span><span>62</span><span>125</span><span>250</span><span>500</span><span>1k</span><span>2k</span><span>4k</span><span>8k</span><span>16k Hz</span></div>
+    <div class="chips" id="eqpre"></div>
+  </div>
+  <div class="sec">
+    <h3>エフェクト <small>グラフ ◔ で時間変化</small></h3>
+    <div id="fxlist"></div>
+    <button class="add">＋ エフェクトを追加</button>
+  </div>
+</aside>
+
+</div>
+
+<script>
+const TOTAL=210, $=s=>document.querySelector(s);
+const tracks=[
+ {n:'BGM',c:'t1'},{n:'ナレーション',c:'t2'},{n:'効果音',c:'t3'},{n:'アンビエンス',c:'t4'}];
+const clips=[
+ {id:0,tr:0,s:0,l:68,n:'test（前半）',b:['EQ']},
+ {id:1,tr:0,s:68,l:137,n:'test（後半）',b:[]},
+ {id:2,tr:1,s:18,l:52,n:'ナレーション1',b:['ロボット']},
+ {id:3,tr:1,s:96,l:54,n:'ナレーション2',b:[]},
+ {id:4,tr:2,s:40,l:9,n:'ドア',b:[]},
+ {id:5,tr:2,s:122,l:8,n:'ベル',b:['速く']},
+ {id:6,tr:3,s:58,l:56,n:'test（コピー）',b:['EQ']}];
+let sel=6, param='vol', mode='line';
+const P={
+ vol:{n:'音量',lo:'0%',hi:'200%',pts:[[0,.5],[1,.5]]},
+ speed:{n:'速さ',lo:'0.5×',hi:'2×',pts:[[0,.5],[1,.5]]},
+ robot:{n:'ロボット',lo:'弱',hi:'強',pts:[[0,0],[1,0]]},
+ fade:{n:'パン（左右）',lo:'左',hi:'右',pts:[[0,.5],[1,.5]]}};
+const FX=[
+ {k:'vol',n:'音量',on:true,amt:50},
+ {k:'speed',n:'速さ',on:false,amt:50},
+ {k:'robot',n:'ロボット',on:false,amt:0}];
+const seed=n=>()=> (n=Math.sin(n*9301+49297)*233280,n-Math.floor(n));
+function wave(id,col){
+  const r=seed(id+3);let up='',dn='';const N=140;
+  for(let i=0;i<=N;i++){const a=.25+.7*Math.abs(Math.sin(i/9+id))*r();up+=`${i*10/ N*14.28},${50-a*48} `;dn=`${i*10/N*14.28},${50+a*48} `+dn}
+  return `<svg viewBox="0 0 1000 100" preserveAspectRatio="none"><polygon points="${up}${dn}" fill="${col}" opacity=".75"/></svg>`}
+function build(){
+  let h='<div class="corner">トラック</div><div class="ruler" id="ruler"></div>';
+  tracks.forEach((t,i)=>{
+    h+=`<div class="head"><div class="n"><span class="dot" style="background:var(--${t.c}l)"></span>${t.n}</div>
+      <div class="ms"><button>ミュート</button><button class="${i==3?'on':''}">ソロ</button></div>
+      <input type="range" value="${80-i*8}" aria-label="音量"></div><div class="lane" data-tr="${i}" style="position:relative"></div>`});
+  h+='<div></div><div><button class="addtr">＋ トラックを追加</button></div>';
+  $('#grid').innerHTML=h;
+  let r='';for(let s=0;s<=TOTAL;s+=10){r+=`<i style="left:${s/TOTAL*100}%"></i><span style="left:${s/TOTAL*100}%">${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}</span>`}
+  $('#ruler').innerHTML=r;
+  const lane=document.querySelectorAll('.lane');
+  lane.forEach(l=>{ if(l.dataset.tr==0)l.insertAdjacentHTML('beforeend','<div class="phd" style="left:'+59.38/TOTAL*100+'%"></div>')});
+  clips.forEach(c=>{
+    const el=document.createElement('div');el.className='clip'+(c.id==sel?' sel':'');
+    el.style.cssText=`left:${c.s/TOTAL*100}%;width:${c.l/TOTAL*100}%;background:var(--${tracks[c.tr].c});color:var(--${tracks[c.tr].c}l)`;
+    el.innerHTML=`<div class="nm">${c.n}${c.b.map(b=>`<span class="bd">${b}</span>`).join('')}</div>${wave(c.id,'currentColor')}<div class="h l"></div><div class="h r"></div>`;
+    lane[c.tr].appendChild(el);
+    el.addEventListener('mousedown',e=>{
+      sel=c.id;const x0=e.clientX,s0=c.s,w=lane[0].getBoundingClientRect().width;
+      const mv=ev=>{c.s=Math.max(0,Math.min(TOTAL-c.l,s0+(ev.clientX-x0)/w*TOTAL));if(snap)c.s=Math.round(c.s);el.style.left=c.s/TOTAL*100+'%';drawGraph()};
+      const up=()=>{removeEventListener('mousemove',mv);removeEventListener('mouseup',up);build();side();drawGraph()};
+      addEventListener('mousemove',mv);addEventListener('mouseup',up);
+      document.querySelectorAll('.clip').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');side();drawGraph()});
+  });
+}
+let snap=true;$('#snap').onclick=e=>{snap=!snap;e.target.classList.toggle('on',snap);e.target.textContent=snap?'ON':'OFF'};
+const fmt=s=>Math.floor(s/60)+':'+(s%60).toFixed(1).padStart(4,'0');
+function side(){
+  const c=clips.find(x=>x.id==sel);
+  $('#selsw').style.background=`var(--${tracks[c.tr].c}l)`;
+  $('#selname').textContent=c.n;
+  $('#selinfo').textContent=`${tracks[c.tr].n} ・ ${fmt(c.s)} – ${fmt(c.s+c.l)}`;
+  $('#fxlist').innerHTML=FX.map((f,i)=>`<div class="fx ${f.k==param?'act':''}"><div class="fxh">
+    <span class="tg ${f.on?'on':''}" data-i="${i}"></span><b>${f.n}</b>
+    <button class="gbtn ${f.k==param?'on':''}" data-k="${f.k}">◔ グラフ</button></div>
+    <div class="fxb"><div class="row">度合い<input type="range" value="${f.amt}"><em>${f.amt}</em></div>
+    ${(f.sub||[]).map(s=>`<div class="row">${s[0]}<input type="range" value="${s[1]}"><em>${s[1]}</em></div>`).join('')}</div></div>`).join('');
+  document.querySelectorAll('.tg').forEach(t=>t.onclick=()=>{FX[t.dataset.i].on=!FX[t.dataset.i].on;side()});
+  document.querySelectorAll('.gbtn').forEach(b=>b.onclick=()=>{param=b.dataset.k;side();plist();drawGraph()});
+  document.querySelectorAll('.fxb input').forEach(i=>i.oninput=()=>i.nextElementSibling.textContent=i.value);
+}
+function plist(){
+  $('#plist').innerHTML='<h4>変化グラフ</h4>'+Object.entries(P).map(([k,p])=>{
+    const ch=p.pts.some(q=>Math.abs(q[1]-p.pts[0][1])>.01)||p.pts.length>2;
+    return `<button class="pi ${k==param?'on':''} ${ch?'has':''}" data-k="${k}"><span class="sw"></span>${p.n}</button>`}).join('');
+  document.querySelectorAll('.pi').forEach(b=>b.onclick=()=>{param=b.dataset.k;plist();side();drawGraph()});
+}
+function pathOf(pts,W,H){
+  const q=pts.map(p=>[p[0]*W,(1-p[1])*H]);
+  if(mode=='step'){let d=`M${q[0][0]},${q[0][1]}`;for(let i=1;i<q.length;i++)d+=`H${q[i][0]}V${q[i][1]}`;return d}
+  if(mode=='curve'&&q.length>2){let d=`M${q[0][0]},${q[0][1]}`;for(let i=0;i<q.length-1;i++){const a=q[i],b=q[i+1],m=(a[0]+b[0])/2;d+=`C${m},${a[1]} ${m},${b[1]} ${b[0]},${b[1]}`}return d}
+  return 'M'+q.map(p=>p.join(',')).join('L')}
+function drawGraph(){
+  const c=clips.find(x=>x.id==sel),p=P[param],g=$('#graph'),W=g.clientWidth,H=g.clientHeight;
+  const x0=c.s/TOTAL,x1=(c.s+c.l)/TOTAL;
+  $('#gtitle').innerHTML=`${p.n}の変化 <small>${c.n} の中で、時間とともに${p.n}の度合いを変えます。クリックで点を追加／ダブルクリックで削除</small>`;
+  const px=(x)=>(x0+x*(x1-x0))*100;
+  const full=[[0,p.pts[0][1]],...p.pts,[1,p.pts[p.pts.length-1][1]]];
+  let h=`<div class="ylab" style="top:-2px">${p.hi}</div><div class="ylab" style="bottom:-2px">${p.lo}</div>
+   <div class="out" style="left:0;width:${x0*100}%"></div><div class="out" style="left:${x1*100}%;right:0"></div>
+   <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+    <defs><linearGradient id="gf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--ac)" stop-opacity=".35"/><stop offset="1" stop-color="var(--ac)" stop-opacity="0"/></linearGradient></defs>
+    ${[.25,.5,.75].map(v=>`<line x1="0" x2="${W}" y1="${H*v}" y2="${H*v}" stroke="var(--line)" stroke-dasharray="3 4"/>`).join('')}
+    <g transform="translate(${x0*W},0) scale(${x1-x0},1)"><path d="${pathOf(p.pts,W,H)}V${H}H0Z" fill="url(#gf)" stroke="none" style="transform-origin:0 0"/>
+    <path d="${pathOf(p.pts,W,H)}" fill="none" stroke="var(--ac)" stroke-width="2.5" vector-effect="non-scaling-stroke"/></g></svg>`;
+  p.pts.forEach((q,i)=>h+=`<div class="pt" data-i="${i}" style="left:${px(q[0])}%;top:${(1-q[1])*100}%"></div>`);
+  h+=`<div class="gphd" style="left:${59.38/TOTAL*100}%;top:0;bottom:0"></div>`;
+  g.innerHTML=h;
+  g.querySelectorAll('.pt').forEach(d=>d.onmousedown=e=>{e.stopPropagation();const i=+d.dataset.i,r=g.getBoundingClientRect();
+    const mv=ev=>{let x=((ev.clientX-r.left)/r.width-x0)/(x1-x0),y=1-(ev.clientY-r.top)/r.height;
+      x=Math.max(0,Math.min(1,x));y=Math.max(0,Math.min(1,y));
+      if(i==0)x=0;if(i==p.pts.length-1)x=1;
+      if(i>0)x=Math.max(x,p.pts[i-1][0]);if(i<p.pts.length-1)x=Math.min(x,p.pts[i+1][0]);
+      p.pts[i]=[x,y];drawGraph()};
+    const up=()=>{removeEventListener('mousemove',mv);removeEventListener('mouseup',up);plist()};
+    addEventListener('mousemove',mv);addEventListener('mouseup',up)});
+  g.querySelectorAll('.pt').forEach(d=>d.ondblclick=e=>{const i=+d.dataset.i;if(i>0&&i<p.pts.length-1){p.pts.splice(i,1);drawGraph();plist()}});
+}
+$('#graph').addEventListener('mousedown',e=>{
+  if(e.target.classList.contains('pt'))return;
+  const c=clips.find(x=>x.id==sel),p=P[param],r=e.currentTarget.getBoundingClientRect(),x0=c.s/TOTAL,x1=(c.s+c.l)/TOTAL;
+  const x=((e.clientX-r.left)/r.width-x0)/(x1-x0),y=1-(e.clientY-r.top)/r.height;
+  if(x<=0||x>=1||y<0||y>1)return;
+  p.pts.push([x,y]);p.pts.sort((a,b)=>a[0]-b[0]);drawGraph();plist()});
+document.querySelectorAll('.gtools button[data-m]').forEach(b=>b.onclick=()=>{mode=b.dataset.m;document.querySelectorAll('.gtools button[data-m]').forEach(x=>x.classList.toggle('on',x==b));drawGraph()});
+$('#reset').onclick=()=>{P[param].pts=[[0,.5],[1,.5]];drawGraph();plist()};
+
+/* EQ */
+const eqG=[0,0,0,0,0,0,0,0,0,0];
+const PRE={'フラット':[0,0,0,0,0,0,0,0,0,0],'低音ブースト':[8,7,5,2,0,0,0,0,0,0],'声を聞きやすく':[-6,-4,-2,0,3,5,4,2,0,-2],'こもらせる':[2,3,2,0,-4,-8,-10,-12,-12,-12],'電話ごえ':[-12,-12,-8,-2,4,6,4,-4,-12,-12]};
+function drawEq(){
+  const e=$('#eq'),W=e.clientWidth||306,H=e.clientHeight||150,n=10;
+  const pt=eqG.map((g,i)=>[W*(i+.5)/n,H/2-g/12*(H/2-14)]);
+  let d=`M0,${pt[0][1]}L${pt[0][0]},${pt[0][1]}`;
+  for(let i=0;i<n-1;i++){const a=pt[i],b=pt[i+1],m=(a[0]+b[0])/2;d+=`C${m},${a[1]} ${m},${b[1]} ${b[0]},${b[1]}`}
+  d+=`L${W},${pt[n-1][1]}`;
+  const bars=Array.from({length:n*3},(_,i)=>{const hh=14+Math.abs(Math.sin(i*.6+1))*50*(1-i/45);return `<rect x="${i*W/(n*3)+2}" y="${H-hh}" width="${W/(n*3)-4}" height="${hh}" fill="var(--ac)" opacity=".12" rx="2"/>`}).join('');
+  e.innerHTML=`<svg viewBox="0 0 ${W} ${H}">${bars}
+    <line x1="0" x2="${W}" y1="${H/2}" y2="${H/2}" stroke="var(--line)"/>
+    ${pt.map(p=>`<line x1="${p[0]}" x2="${p[0]}" y1="0" y2="${H}" stroke="var(--line)" stroke-dasharray="2 4"/>`).join('')}
+    <path d="${d}" fill="none" stroke="var(--ac)" stroke-width="2.5"/>
+    ${pt.map((p,i)=>`<circle data-i="${i}" cx="${p[0]}" cy="${p[1]}" r="6.5" fill="var(--panel)" stroke="var(--ac)" stroke-width="2.5" style="cursor:ns-resize"/>`).join('')}
+    <text x="6" y="12" font-size="9" fill="var(--sub)">+12dB</text><text x="6" y="${H-5}" font-size="9" fill="var(--sub)">-12dB</text></svg>`;
+  e.querySelectorAll('circle').forEach(c=>c.onmousedown=ev=>{const i=+c.dataset.i,r=e.getBoundingClientRect();
+    const mv=m=>{const y=(m.clientY-r.top-H/2)/(H/2-14);eqG[i]=Math.round(Math.max(-12,Math.min(12,-y*12))*2)/2;$('#eqname').textContent='カスタム';document.querySelectorAll('#eqpre .chip').forEach(x=>x.classList.remove('on'));drawEq()};
+    const up=()=>{removeEventListener('mousemove',mv);removeEventListener('mouseup',up)};
+    addEventListener('mousemove',mv);addEventListener('mouseup',up)});
+}
+$('#eqpre').innerHTML=Object.keys(PRE).map((k,i)=>`<button class="chip ${i==0?'on':''}">${k}</button>`).join('');
+document.querySelectorAll('#eqpre .chip').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#eqpre .chip').forEach(x=>x.classList.toggle('on',x==b));
+  PRE[b.textContent].forEach((v,i)=>eqG[i]=v);$('#eqname').textContent=b.textContent;drawEq()});
+
+build();side();plist();drawEq();drawGraph();
+addEventListener('resize',()=>{drawGraph();drawEq()});
+</script>
+</body>
+</html>

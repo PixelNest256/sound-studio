@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+  <title>icon--eq</title>
+  <g fill="none" stroke="#855cd6" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">
+    <path d="M3 14 V10" />
+    <path d="M6.5 14 V7" />
+    <path d="M10 14 V5" />
+    <path d="M13.5 14 V8" />
+    <path d="M17 14 V11" />
+    <circle cx="3" cy="9" r="1.2" fill="#855cd6" stroke="none"/>
+    <circle cx="6.5" cy="6" r="1.2" fill="#855cd6" stroke="none"/>
+    <circle cx="10" cy="4" r="1.2" fill="#855cd6" stroke="none"/>
+    <circle cx="13.5" cy="7" r="1.2" fill="#855cd6" stroke="none"/>
+    <circle cx="17" cy="10" r="1.2" fill="#855cd6" stroke="none"/>
+  </g>
+</svg>
