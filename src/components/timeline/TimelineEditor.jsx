@@ -10,6 +10,7 @@ import {
     createTrack,
     duplicateClip,
     projectDuration,
+    sliceChannelsRange,
     snapTime,
     splitClip,
     trimClipEnd,
